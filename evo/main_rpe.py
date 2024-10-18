@@ -73,7 +73,7 @@ def rpe(traj_ref: PosePath3D, traj_est: PosePath3D,
     data = (traj_ref, traj_est)
     rpe_metric = metrics.RPE(pose_relation, delta, delta_unit, rel_delta_tol,
                              all_pairs, pairs_from_reference)
-    rpe_metric.process_data(data)
+    error_array = rpe_metric.process_data(data)
 
     if change_unit:
         rpe_metric.change_unit(change_unit)
@@ -130,7 +130,7 @@ def rpe(traj_ref: PosePath3D, traj_est: PosePath3D,
         rpe_result.add_np_array("alignment_transformation_sim3",
                                 alignment_transformation)
 
-    return rpe_result
+    return rpe_result, data, error_array
 
 
 def run(args: argparse.Namespace) -> None:
@@ -172,7 +172,7 @@ def run(args: argparse.Namespace) -> None:
             traj_ref, traj_est, args.t_max_diff, args.t_offset,
             first_name=ref_name, snd_name=est_name)
 
-    result = rpe(traj_ref=traj_ref, traj_est=traj_est,
+    result, data, error_array = rpe(traj_ref=traj_ref, traj_est=traj_est,
                  pose_relation=pose_relation, delta=args.delta,
                  delta_unit=delta_unit, rel_delta_tol=args.delta_tol,
                  all_pairs=args.all_pairs,
@@ -195,6 +195,7 @@ def run(args: argparse.Namespace) -> None:
         file_interface.save_res_file(args.save_results, result,
                                      confirm_overwrite=not args.no_warnings)
 
+    return data, error_array
 
 if __name__ == '__main__':
     from evo import entry_points

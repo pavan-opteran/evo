@@ -70,7 +70,6 @@ def ape(traj_ref: PosePath3D, traj_est: PosePath3D,
     logger.debug(SEP)
     data = (traj_ref, traj_est)
     ape_metric = metrics.APE(pose_relation)
-    ape_metric.process_data(data)
     error_array = ape_metric.process_data(data)
 
     if change_unit:
