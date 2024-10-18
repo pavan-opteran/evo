@@ -71,6 +71,7 @@ def ape(traj_ref: PosePath3D, traj_est: PosePath3D,
     data = (traj_ref, traj_est)
     ape_metric = metrics.APE(pose_relation)
     ape_metric.process_data(data)
+    error_array = ape_metric.process_data(data)
 
     if change_unit:
         ape_metric.change_unit(change_unit)
@@ -112,7 +113,7 @@ def ape(traj_ref: PosePath3D, traj_est: PosePath3D,
         ape_result.add_np_array("alignment_transformation_sim3",
                                 alignment_transformation)
 
-    return ape_result
+    return ape_result, data, error_array
 
 
 def run(args: argparse.Namespace) -> None:
@@ -152,7 +153,7 @@ def run(args: argparse.Namespace) -> None:
             traj_ref, traj_est, args.t_max_diff, args.t_offset,
             first_name=ref_name, snd_name=est_name)
 
-    result = ape(traj_ref=traj_ref, traj_est=traj_est,
+    result, data, error_array = ape(traj_ref=traj_ref, traj_est=traj_est,
                  pose_relation=pose_relation, align=args.align,
                  correct_scale=args.correct_scale, n_to_align=args.n_to_align,
                  align_origin=args.align_origin, ref_name=ref_name,
@@ -171,6 +172,8 @@ def run(args: argparse.Namespace) -> None:
             del result.trajectories[est_name]
         file_interface.save_res_file(args.save_results, result,
                                      confirm_overwrite=not args.no_warnings)
+    
+    return data, error_array
 
 
 if __name__ == '__main__':
