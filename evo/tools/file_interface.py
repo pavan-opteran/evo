@@ -115,8 +115,10 @@ def read_tum_trajectory_file(file_path: PathStrHandle) -> PoseTrajectory3D:
     quat = mat[:, 4:]  # n x 4
     quat = np.roll(quat, 1, axis=1)  # shift 1 column -> w in front column
     if not hasattr(file_path, 'read'):  # if not file handle
-        logger.debug("Loaded {} stamps and poses from: {}".format(
+        print("Loaded {} stamps and poses from: {}".format(
             len(stamps), file_path))
+    else:
+        print(f"Error loading the poses from {file_path} ")
     return PoseTrajectory3D(xyz, quat, stamps)
 
 
@@ -166,7 +168,7 @@ def read_kitti_poses_file(file_path: PathStrHandle) -> PosePath3D:
                        [0, 0, 0, 1]]) for r in mat]
     # yapf: enable
     if not hasattr(file_path, 'read'):  # if not file handle
-        logger.debug("Loaded {} poses from: {}".format(len(poses), file_path))
+        print("Loaded {} poses from: {}".format(len(poses), file_path))
     return PosePath3D(poses_se3=poses)
 
 
@@ -207,7 +209,7 @@ def read_euroc_csv_trajectory(file_path: PathStrHandle) -> PoseTrajectory3D:
     stamps = np.divide(mat[:, 0], 1e9)  # n x 1  -  nanoseconds to seconds
     xyz = mat[:, 1:4]  # n x 3
     quat = mat[:, 4:8]  # n x 4
-    logger.debug("Loaded {} stamps and poses from: {}".format(
+    print("Loaded {} stamps and poses from: {}".format(
         len(stamps), file_path))
     return PoseTrajectory3D(xyz, quat, stamps)
 
@@ -325,7 +327,7 @@ def read_bag_trajectory(reader: typing.Union[Rosbag1Reader,
         xyz.append(xyz_t)
         quat.append(quat_t)
 
-    logger.debug("Loaded {} {} messages of topic: {}".format(
+    print("Loaded {} {} messages of topic: {}".format(
         len(stamps), msg_type, topic))
 
     # yapf: disable
@@ -405,7 +407,7 @@ def save_res_file(zip_path: PathStrHandle, result_obj: result.Result,
            to overwrite existing files
     """
     if isinstance(zip_path, (str, Path)):
-        logger.debug("Saving results to %s...", zip_path)
+        print("Saving results to %s...", zip_path)
         if confirm_overwrite and not user.check_and_confirm_overwrite(
                 zip_path):
             return
@@ -443,7 +445,7 @@ def load_res_file(zip_path: PathStrHandle,
     :param load_trajectories: set to True to load also the (backup) trajectories
     :return: evo.core.result.Result instance
     """
-    logger.debug("Loading result from {} ...".format(zip_path))
+    print("Loading result from {} ...".format(zip_path))
     result_obj = result.Result()
     with zipfile.ZipFile(zip_path, mode='r') as archive:
         file_list = archive.namelist()

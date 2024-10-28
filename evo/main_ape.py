@@ -71,6 +71,9 @@ def ape(traj_ref: PosePath3D, traj_est: PosePath3D,
     data = (traj_ref, traj_est)
     ape_metric = metrics.APE(pose_relation)
     error_array = ape_metric.process_data(data)
+    if not len(error_array):
+        print("NO ERRROR ARRAY OBTAINED")
+    
 
     if change_unit:
         ape_metric.change_unit(change_unit)
@@ -120,6 +123,7 @@ def run(args: argparse.Namespace) -> None:
                           local_logfile=args.logfile)
     
     print("Inside Run Method........")
+    print(args)
     if args.debug:
         from pprint import pformat
         parser_str = pformat({arg: getattr(args, arg) for arg in vars(args)})

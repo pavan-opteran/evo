@@ -42,9 +42,11 @@ def load_trajectories(
     traj_est: typing.Union[PosePath3D, PoseTrajectory3D]
 
     if args.subcommand == "tum":
+    
         traj_ref = file_interface.read_tum_trajectory_file(args.ref_file)
         traj_est = file_interface.read_tum_trajectory_file(args.est_file)
         ref_name, est_name = args.ref_file, args.est_file
+        print("Inside TUM format statement check")
     elif args.subcommand == "kitti":
         traj_ref = file_interface.read_kitti_poses_file(args.ref_file)
         traj_est = file_interface.read_kitti_poses_file(args.est_file)
@@ -54,7 +56,7 @@ def load_trajectories(
         traj_est = file_interface.read_tum_trajectory_file(args.est_file)
         ref_name, est_name = args.state_gt_csv, args.est_file
     elif args.subcommand in ("bag", "bag2"):
-        logger.debug("Opening bag file " + args.bag)
+        print("Opening bag file " + args.bag)
         if not Path(args.bag).exists():
             raise file_interface.FileInterfaceException(
                 "File doesn't exist: {}".format(args.bag))
@@ -75,7 +77,8 @@ def load_trajectories(
             bag.close()
     else:
         raise KeyError("unknown sub-command: {}".format(args.subcommand))
-
+    print("TRAJ_REF", traj_ref)
+    print("TRAJ_EST", traj_est)
     return traj_ref, traj_est, ref_name, est_name
 
 
@@ -115,11 +118,11 @@ def downsample_or_filter(args: argparse.Namespace, traj_ref: PosePath3D,
     if not (args.downsample or args.motion_filter):
         return
 
-    logger.debug(SEP)
+    print(SEP)
     old_num_poses_ref = traj_ref.num_poses
     old_num_poses_est = traj_est.num_poses
     if args.downsample:
-        logger.debug("Downsampling trajectories to max %d poses.",
+        print("Downsampling trajectories to max %d poses.",
                      args.downsample)
         traj_ref.downsample(args.downsample)
         traj_est.downsample(args.downsample)
@@ -131,14 +134,14 @@ def downsample_or_filter(args: argparse.Namespace, traj_ref: PosePath3D,
                                   "could break the required synchronization")
         distance_threshold = args.motion_filter[0]
         angle_threshold = args.motion_filter[1]
-        logger.debug(
+        print(
             "Filtering trajectories with motion filter "
             "thresholds: %f m, %f deg", distance_threshold, angle_threshold)
         traj_ref.motion_filter(distance_threshold, angle_threshold, True)
         traj_est.motion_filter(distance_threshold, angle_threshold, True)
-    logger.debug("Number of poses in reference was reduced from %d to %d.",
+    print("Number of poses in reference was reduced from %d to %d.",
                  old_num_poses_ref, traj_ref.num_poses)
-    logger.debug("Number of poses in estimate was reduced from %d to %d.",
+    print("Number of poses in estimate was reduced from %d to %d.",
                  old_num_poses_est, traj_est.num_poses)
 
 
@@ -151,8 +154,8 @@ def plot_result(args: argparse.Namespace, result: Result, traj_ref: PosePath3D,
     import matplotlib.pyplot as plt
     import numpy as np
 
-    logger.debug(SEP)
-    logger.debug("Plotting results... ")
+    print(SEP)
+    print("Plotting results... ")
     plot_mode = plot.PlotMode(args.plot_mode)
 
     # Plot the raw metric values.
@@ -227,7 +230,7 @@ def plot_result(args: argparse.Namespace, result: Result, traj_ref: PosePath3D,
         plot_collection.export(args.save_plot,
                                confirm_overwrite=not args.no_warnings)
     if args.serialize_plot:
-        logger.debug(SEP)
+        print(SEP)
         plot_collection.serialize(args.serialize_plot,
                                   confirm_overwrite=not args.no_warnings)
     plot_collection.close()
