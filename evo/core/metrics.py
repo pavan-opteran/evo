@@ -310,13 +310,13 @@ class RPE(PE):
                 for i, j in id_pairs
             ]
 
-        logger.debug(
+        print(
             "Compared {} relative pose pairs, delta = {} ({}) {}".format(
                 len(self.E), self.delta, self.delta_unit.value,
                 ("with all pairs." if self.all_pairs \
                 else "with consecutive pairs.")))
 
-        logger.debug("Calculating RPE for {} pose relation...".format(
+        print("Calculating RPE for {} pose relation...".format(
             self.pose_relation.value))
 
         if self.pose_relation in (PoseRelation.point_distance,
@@ -346,6 +346,7 @@ class RPE(PE):
             raise MetricsException("unsupported pose_relation: ",
                                    self.pose_relation)
 
+        return self.error
 
 class APE(PE):
     """
@@ -409,8 +410,8 @@ class APE(PE):
                 self.ape_base(x_t, x_t_star) for x_t, x_t_star in zip(
                     traj_est.poses_se3, traj_ref.poses_se3)
             ]
-        logger.debug("Compared {} absolute pose pairs.".format(len(self.E)))
-        logger.debug("Calculating APE for {} pose relation...".format(
+        print("Compared {} absolute pose pairs.".format(len(self.E)))
+        print("Calculating APE for {} pose relation...".format(
             (self.pose_relation.value)))
 
         if self.pose_relation in (PoseRelation.translation_part,
@@ -433,6 +434,8 @@ class APE(PE):
                 [abs(lie.so3_log_angle(E_i[:3, :3], True)) for E_i in self.E])
         else:
             raise MetricsException("unsupported pose_relation")
+        
+        return self.error
 
 
 def id_pairs_from_delta(poses: typing.Sequence[np.ndarray], delta: float,
@@ -466,7 +469,7 @@ def id_pairs_from_delta(poses: typing.Sequence[np.ndarray], delta: float,
             "delta = {} ({}) produced an empty index list - try lower values "
             "or a less strict tolerance".format(delta, delta_unit.value))
 
-    logger.debug(
+    print(
         "Found {} pairs with delta {} ({}) "
         "among {} poses ".format(len(id_pairs), delta, delta_unit.value,
                                  len(poses)) +

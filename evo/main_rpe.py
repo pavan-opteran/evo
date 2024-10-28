@@ -53,23 +53,23 @@ def rpe(traj_ref: PosePath3D, traj_est: PosePath3D,
     only_scale = correct_scale and not align
     alignment_transformation = None
     if align or correct_scale:
-        logger.debug(SEP)
+        print(SEP)
         alignment_transformation = lie_algebra.sim3(
             *traj_est.align(traj_ref, correct_scale, only_scale, n=n_to_align))
     if align_origin:
-        logger.debug(SEP)
+        print(SEP)
         alignment_transformation = traj_est.align_origin(traj_ref)
 
     # Projection is done after potential 3D alignment & transformation steps.
     if project_to_plane:
-        logger.debug(SEP)
-        logger.debug("Projecting trajectories to %s plane.",
+        print(SEP)
+        print("Projecting trajectories to %s plane.",
                      project_to_plane.value)
         traj_ref.project(project_to_plane)
         traj_est.project(project_to_plane)
 
     # Calculate RPE.
-    logger.debug(SEP)
+    print(SEP)
     data = (traj_ref, traj_est)
     rpe_metric = metrics.RPE(pose_relation, delta, delta_unit, rel_delta_tol,
                              all_pairs, pairs_from_reference)
@@ -97,7 +97,7 @@ def rpe(traj_ref: PosePath3D, traj_est: PosePath3D,
 
     rpe_result = rpe_metric.get_result(ref_name, est_name)
     rpe_result.info["title"] = title
-    logger.debug(SEP)
+    print(SEP)
     logger.info(rpe_result.pretty_str())
 
     # Restrict trajectories to delta ids for further processing steps.
@@ -140,8 +140,8 @@ def run(args: argparse.Namespace) -> None:
     if args.debug:
         from pprint import pformat
         parser_str = pformat({arg: getattr(args, arg) for arg in vars(args)})
-        logger.debug("main_parser config:\n{}".format(parser_str))
-    logger.debug(SEP)
+        print("main_parser config:\n{}".format(parser_str))
+    print(SEP)
 
     traj_ref, traj_est, ref_name, est_name = common.load_trajectories(args)
     pose_relation = common.get_pose_relation(args)
@@ -160,14 +160,14 @@ def run(args: argparse.Namespace) -> None:
 
     if isinstance(traj_ref, PoseTrajectory3D) and isinstance(
             traj_est, PoseTrajectory3D):
-        logger.debug(SEP)
+        print(SEP)
         if args.t_start or args.t_end:
             if args.t_start:
                 logger.info("Using time range start: {}s".format(args.t_start))
             if args.t_end:
                 logger.info("Using time range end: {}s".format(args.t_end))
             traj_ref.reduce_to_time_range(args.t_start, args.t_end)
-        logger.debug("Synchronizing trajectories...")
+        print("Synchronizing trajectories...")
         traj_ref, traj_est = sync.associate_trajectories(
             traj_ref, traj_est, args.t_max_diff, args.t_offset,
             first_name=ref_name, snd_name=est_name)
@@ -188,7 +188,7 @@ def run(args: argparse.Namespace) -> None:
                            traj_ref_full=traj_ref_full)
 
     if args.save_results:
-        logger.debug(SEP)
+        print(SEP)
         if not SETTINGS.save_traj_in_zip:
             del result.trajectories[ref_name]
             del result.trajectories[est_name]
