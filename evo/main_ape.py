@@ -71,8 +71,6 @@ def ape(traj_ref: PosePath3D, traj_est: PosePath3D,
     data = (traj_ref, traj_est)
     ape_metric = metrics.APE(pose_relation)
     error_array = ape_metric.process_data(data)
-    
-    
 
     if change_unit:
         ape_metric.change_unit(change_unit)
@@ -98,7 +96,7 @@ def ape(traj_ref: PosePath3D, traj_est: PosePath3D,
     ape_result.info["title"] = title
 
     print(SEP)
-    logger.info(ape_result.pretty_str())
+    print(ape_result.pretty_str())
 
     ape_result.add_trajectory(ref_name, traj_ref)
     ape_result.add_trajectory(est_name, traj_est)
@@ -140,6 +138,8 @@ def run(args: argparse.Namespace) -> None:
         print("APE Unable to figure out")
 
     pose_relation = common.get_pose_relation(args)
+
+    print("Pose Relation : ", pose_relation)
     change_unit = metrics.Unit(args.change_unit) if args.change_unit else None
     plane = Plane(args.project_to_plane) if args.project_to_plane else None
 
@@ -157,11 +157,12 @@ def run(args: argparse.Namespace) -> None:
         print(SEP)
         if args.t_start or args.t_end:
             if args.t_start:
-                logger.info("Using time range start: {}s".format(args.t_start))
+                print("Using time range start: {}s".format(args.t_start))
             if args.t_end:
-                logger.info("Using time range end: {}s".format(args.t_end))
+                print("Using time range end: {}s".format(args.t_end))
             traj_ref.reduce_to_time_range(args.t_start, args.t_end)
         print("Synchronizing trajectories...")
+
         traj_ref, traj_est = sync.associate_trajectories(
             traj_ref, traj_est, args.t_max_diff, args.t_offset,
             first_name=ref_name, snd_name=est_name)

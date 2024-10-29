@@ -413,10 +413,11 @@ class APE(PE):
         print("Compared {} absolute pose pairs.".format(len(self.E)))
         print("Calculating APE for {} pose relation...".format(
             (self.pose_relation.value)))
-
+        print("POSE RELATION INMETRICS {}".format(self.pose_relation))
         if self.pose_relation in (PoseRelation.translation_part,
                                   PoseRelation.point_distance):
             # E is an array of position vectors only in this case
+
             self.error = np.array([np.linalg.norm(E_i) for E_i in self.E])
         elif self.pose_relation == PoseRelation.rotation_part:
             self.error = np.array([
@@ -434,6 +435,8 @@ class APE(PE):
                 [abs(lie.so3_log_angle(E_i[:3, :3], True)) for E_i in self.E])
         else:
             raise MetricsException("unsupported pose_relation")
+        
+        print("ERROR IS {}".format(self.error))
         
         return self.error
 
