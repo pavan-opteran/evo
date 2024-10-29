@@ -71,8 +71,7 @@ def ape(traj_ref: PosePath3D, traj_est: PosePath3D,
     data = (traj_ref, traj_est)
     ape_metric = metrics.APE(pose_relation)
     error_array = ape_metric.process_data(data)
-    if not len(error_array):
-        print("NO ERRROR ARRAY OBTAINED")
+    
     
 
     if change_unit:
