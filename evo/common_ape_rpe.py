@@ -41,12 +41,30 @@ def load_trajectories(
     traj_ref: typing.Union[PosePath3D, PoseTrajectory3D]
     traj_est: typing.Union[PosePath3D, PoseTrajectory3D]
 
+    print(args)
+
+    with open(args.ref_file, 'r') as file:
+        print("REF_FILE DATA")
+        for i in range(4):
+            line = file.readline()
+            if not line:
+                break  # Stop if there are fewer than 4 lines
+            print(line.strip())
+
+    with open(args.est_file, 'r') as file:
+        print("EST_FILE DATA")
+        for i in range(4):
+            line = file.readline()
+            if not line:
+                break  # Stop if there are fewer than 4 lines
+            print(line.strip())
+
     if args.subcommand == "tum":
-    
+        print("Inside TUM format statement check")
         traj_ref = file_interface.read_tum_trajectory_file(args.ref_file)
         traj_est = file_interface.read_tum_trajectory_file(args.est_file)
         ref_name, est_name = args.ref_file, args.est_file
-        print("Inside TUM format statement check")
+        
     elif args.subcommand == "kitti":
         traj_ref = file_interface.read_kitti_poses_file(args.ref_file)
         traj_est = file_interface.read_kitti_poses_file(args.est_file)

@@ -123,13 +123,13 @@ def run(args: argparse.Namespace) -> None:
                           local_logfile=args.logfile)
     
     print("Inside Run Method........")
-    print(args)
+    
     if args.debug:
         from pprint import pformat
         parser_str = pformat({arg: getattr(args, arg) for arg in vars(args)})
         print("main_parser config:\n{}".format(parser_str))
     print(SEP)
-
+    print("PRINTING ARGS BEFORE LOAD TRAJ", args)
     traj_ref, traj_est, ref_name, est_name = common.load_trajectories(args)
     pose_relation = common.get_pose_relation(args)
     change_unit = metrics.Unit(args.change_unit) if args.change_unit else None
