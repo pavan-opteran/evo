@@ -130,7 +130,14 @@ def run(args: argparse.Namespace) -> None:
         print("main_parser config:\n{}".format(parser_str))
     print(SEP)
     print("PRINTING ARGS BEFORE LOAD TRAJ", args)
-    traj_ref, traj_est, ref_name, est_name = common.load_trajectories(args)
+    # traj_ref, traj_est, ref_name, est_name = common.load_trajectories(args)
+
+    if args.subcommand == "tum":
+        print("Inside TUM format statement check")
+        traj_ref = file_interface.read_tum_trajectory_file(args.ref_file)
+        traj_est = file_interface.read_tum_trajectory_file(args.est_file)
+        ref_name, est_name = args.ref_file, args.est_file
+
     pose_relation = common.get_pose_relation(args)
     change_unit = metrics.Unit(args.change_unit) if args.change_unit else None
     plane = Plane(args.project_to_plane) if args.project_to_plane else None
